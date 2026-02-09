@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Be My Valentine 💖</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    background: radial-gradient(circle at top, #ff9a9e, #fad0c4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Poppins", Arial, sans-serif;
+    overflow: hidden;
+}
+
+.card {
+    background: white;
+    padding: 35px 25px;
+    border-radius: 25px;
+    width: 92%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+    animation: pop 0.8s ease;
+}
+
+@keyframes pop {
+    from { transform: scale(0.7); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+h1 {
+    color: #ff2f6d;
+    font-size: 28px;
+    line-height: 1.3;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 30px;
+    position: relative;
+    height: 120px;
+}
+
+button {
+    border: none;
+    padding: 14px 28px;
+    font-size: 18px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#yes {
+    background: linear-gradient(135deg, #ff4d88, #ff1f6d);
+    color: white;
+    box-shadow: 0 10px 25px rgba(255, 77, 136, 0.5);
+    z-index: 2;
+}
+
+#no {
+    background: #eee;
+    z-index: 1;
+}
+
+#yay {
+    display: none;
+}
+
+#yay h2 {
+    font-size: 44px;
+    color: #ff1f6d;
+    margin-bottom: 10px;
+}
+
+img {
+    width: 100%;
+    max-width: 260px;
+    margin-top: 10px;
+}
+
+/* Floating hearts */
+.heart {
+    position: fixed;
+    bottom: -20px;
+    font-size: 22px;
+    animation: float 6s linear infinite;
+}
+
+@keyframes float {
+    from {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-110vh) scale(1.5);
+        opacity: 0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<audio id="music" loop preload="auto">
+    <source src="{{ url_for('static', filename='love.mp3') }}" type="audio/mpeg">
+    Your browser does not support audio.
+</audio>
+
+
+<div class="card" id="question">
+    <h1>Anita 💕<br>Will you be my Valentine?</h1>
+
+    <div class="buttons">
+        <button id="yes" onclick="yesClick()">Yes 💖</button>
+        <button id="no" onclick="moveNo()" ontouchstart="moveNo()">No 💔</button>
+    </div>
+</div>
+
+<div class="card" id="yay">
+    <h2>YAY!! 🎉💘</h2>
+    <img src="{{ url_for('static', filename='yay.gif') }}">
+</div>
+
+<script>
+let scale = 1;
+let escaped = false;
+
+function moveNo() {
+    const music = document.getElementById("music");
+    music.play().catch(() => {});
+
+    const no = document.getElementById("no");
+    const container = document.querySelector(".buttons");
+
+    if (!escaped) {
+        no.style.position = "absolute";
+        escaped = true;
+    }
+
+    const maxX = container.offsetWidth - no.offsetWidth;
+    const maxY = container.offsetHeight - no.offsetHeight;
+
+    no.style.left = Math.random() * maxX + "px";
+    no.style.top = Math.random() * maxY + "px";
+
+    scale += 0.12;
+    document.getElementById("yes").style.transform = `scale(${scale})`;
+}
+
+function yesClick() {
+    const music = document.getElementById("music");
+
+    // Force play inside user gesture
+    music.currentTime = 0;
+    music.play().catch(err => {
+        console.log("Audio blocked:", err);
+    });
+
+    document.getElementById("question").style.display = "none";
+    document.getElementById("yay").style.display = "block";
+    startHearts();
+}
+
+
+function startHearts() {
+    setInterval(() => {
+        const h = document.createElement("div");
+        h.className = "heart";
+        h.innerText = "💖";
+        h.style.left = Math.random() * 100 + "vw";
+        h.style.animationDuration = (Math.random() * 3 + 4) + "s";
+        document.body.appendChild(h);
+
+        setTimeout(() => h.remove(), 6000);
+    }, 300);
+}
+</script>
+
+</body>
+</html>
